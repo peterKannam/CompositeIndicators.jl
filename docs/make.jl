@@ -1,15 +1,16 @@
 using Documenter, .CompositeIndicators
 
-DocMeta.setdocmeta!(StatGeochem, :DocTestSetup, :(using StatGeochem); recursive=true)
+DocMeta.setdocmeta!(CompositeIndicators, :DocTestSetup, :(using CompositeIndicators); recursive=true)
 
 makedocs(;
     modules=[CompositeIndicators],
+    checkdocs=:exports,
     authors="Peter Kannam",
-    repo="https://github.com/brenhinkeller/StatGeochem.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/peterkannam/CompositeIndicators.jl/blob/{commit}{path}#{line}",
     sitename="CompositeIndicators.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://brenhinkeller.github.io/StatGeochem.jl",
+        canonical="https://github.com/peterkannam/CompositeIndicators.jl",
         assets=String[],
     ),
     pages=[
@@ -18,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/brenhinkeller/StatGeochem.jl",
+    repo="https://github.com/peterkannam/CompositeIndicators.jl",
     devbranch = "main",
 )
