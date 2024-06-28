@@ -1,0 +1,2 @@
+# CompositeIndicators.jl
+ 
