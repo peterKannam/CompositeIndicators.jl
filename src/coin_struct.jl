@@ -119,6 +119,8 @@ Resulting weights for each indicator are proportional to the number of indicator
 
 # Examples
 ```jldoctest
+julia> using DataFrames
+
 julia> w = DataFrame(:iCode=>["L1A","L1B","L1C","L1D","L2A","L2B","L3A"],
            :Level=>[1,1,1,1,2,2,3],
            :Parent=>["L2A","L2A","L2B","L2B","L3A","L3A","NA"],
