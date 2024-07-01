@@ -1,4 +1,1 @@
-
-```@autodocs
-Modules = [CompositeIndicators]
-```
+# CompositeIndicators.jl
