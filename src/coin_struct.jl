@@ -7,18 +7,18 @@ using DataFrames,CSV
 
 The dictionaries are used to contruct and analyse a composite indicator model.
 
-#Fields
--`input::Dict{Symbol,Any}`:
+# Fields
+-`input::Dict{Symbol,Any}`: 
 
 -`data::Dict{Symbol,Any}`:
 
 -`weights::Dict{Symbol,Any}`:
 
--`log::DataFrame`:
-
 -`results::Dict{Symbol,Any}`:
 
 -`figures::Dict{Symbol,Any}`:
+
+-`log::DataFrame`:
 """
 mutable struct Coin
     input::Dict{Symbol ,Any}
@@ -98,14 +98,14 @@ be further defined using the `column_out` keyword.
 function get_meta(coin::Coin,colval_tup::Tuple{Union{String,Symbol},Any};
     column_out = names(coin.input[:indMeta]))
     
-    o= subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
+    o = subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
     return o
 end
 
 #return specific meta data, no keyword
 function get_meta(coin::Coin,colval_tup::Tuple{Union{String,Symbol},Any},column_out)
     
-    o= subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
+    o = subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
     return o
 end
 
