@@ -1,0 +1,36 @@
+﻿Level,iCode,iName,Direction,Weight,Parent,Type
+1,Asthma,Asthma,1,1,SenPop,Indicator
+1,CHD,Coronary Heart Disease,1,1,SenPop,Indicator
+1,Disability,Disability,1,1,SenPop,Indicator
+1,LBW,Low Birthweight,1,1,SenPop,Indicator
+1,OldAge,Old Age,1,1,SenPop,Indicator
+1,YoungAge,Young Age,1,1,SenPop,Indicator
+1,POC,People of Color,1,1,SEFac,Indicator
+1,NoIns,No Health Insurance,1,1,SEFac,Indicator
+1,HBLI,"Housing Burdened, Lower Income",1,1,SEFac,Indicator
+1,LowInc,Low Income,1,1,SEFac,Indicator
+1,LowEd,Less than High School Education,1,1,SEFac,Indicator
+1,Unemp,Unemployment,1,1,SEFac,Indicator
+1,LingIso,Linguistic Isolation,1,1,SEFac,Indicator
+1,Freight,Active Freight Line Proximity,1,1,EnvCond,Indicator
+1,PWDis,Wastewater Discharge,1,1,EnvCond,Indicator
+1,Waste,Waste and Recycling Proximity,1,1,EnvCond,Indicator
+1,Psites,Polluted Sites Proximity,1,1,EnvCond,Indicator
+1,RMP,RMP Site Proximity,1,1,EnvCond,Indicator
+1,TRI,TRI Site Proximity,1,1,EnvCond,Indicator
+1,CF,Consequential Facility/Potentially Polluting Industry Proximity,1,1,EnvCond,Indicator
+1,CANCER,Cancer Risk from Air Toxics,1,1,EnvExp,Indicator
+1,HI,Non-Cancer Risk from Air Toxics,1,1,EnvExp,Indicator
+1,OZONE,Ozone,1,1,EnvExp,Indicator
+1,PM25,PM2.5,1,1,EnvExp,Indicator
+1,DSLPM,Diesel Particulate Matter ,1,1,EnvExp,Indicator
+1,PTRAF,Traffic Proximity and Volume,1,1,EnvExp,Indicator
+1,RSEI_AIR,Toxic Releases to Air,1,1,EnvExp,Indicator
+1,EBLL,Lead Poisoning,1,1,EnvExp,Indicator
+2,SenPop,Sensitive Populations,1,1,PopChar,Aggregate
+2,SEFac,Socioeconomic Factors,1,1,PopChar,Aggregate
+2,EnvCond,Environmental Conditions,1,1,PolBur,Aggregate
+2,EnvExp,Environmental Exposure,1,1,PolBur,Aggregate
+3,PopChar,Population Characteristics,1,1,Index,Aggregate
+3,PolBur,Pollution Burden,1,1,Index,Aggregate
+4,Index,CIA,1,1,NA,Aggregate
