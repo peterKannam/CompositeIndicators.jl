@@ -1,7 +1,16 @@
 using MultivariateStats
 
-function indicatorcorrelation(coin::Coin;
-    datakey=:d_original,indicators= names(coin.data[datakey]),resultkey=:cor_current, cor_function = cor,write2coin = false)
+"""
+    indicatorcorrelation!(coin::Coin;
+        datakey=:d_original,indicators= names(coin.data[datakey]),
+        resultkey=:cor_current, cor_function = cor,write2coin = false)
+
+    Apply `cor_function` to `coin.data[datakey][:,indicators]` and save the result
+    to `coin.results[resultkey]` if `write2coin = true`.
+"""
+function indicatorcorrelation!(coin::Coin;
+        datakey=:d_original,indicators= names(coin.data[datakey]),
+        resultkey=:cor_current, cor_function = cor,write2coin = false)
 
     o = cor_function(Matrix(coin.data[datakey][:,indicators]))
     o = DataFrame(o, :auto)
@@ -13,8 +22,17 @@ function indicatorcorrelation(coin::Coin;
     return o
 end
 
-function indicatorpca(coin::Coin;
-    datakey=:d_original,indicators= names(coin.data[datakey]),resultkey=:pca_model, maxoutdim = 2,write2coin = false)
+"""
+    indicatorpca!(coin::Coin;
+        datakey=:d_original,indicators= names(coin.data[datakey]),
+        resultkey=:pca_model, maxoutdim = 2,write2coin = false)
+    
+    Compute PCA model of `coin.data[datakey][:,indicators]` and save the result
+    to `coin.results[resultkey]` if `write2coin = true`.
+"""
+function indicatorpca!(coin::Coin;
+        datakey=:d_original,indicators= names(coin.data[datakey]),
+        resultkey=:pca_model, maxoutdim = 2,write2coin = false)
 
     d = coin.data[datakey][:,indicators]
     #generate PCA model. Matrix transpose occurs to reduce indicator dimensions instead of unit dimensions

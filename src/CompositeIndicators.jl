@@ -22,4 +22,8 @@ export aggregate!,
     ag_mean,
     ag_prod
 
+include("coherence.jl")
+export indicatorcorrelation!,
+    indicatorpca!
+
 end
