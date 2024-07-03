@@ -68,6 +68,7 @@ function new_coin(indData::DataFrame,indMeta::DataFrame)
     return coin_out
 end
 
+
 function check_indMeta(indMeta::DataFrame)
     
 end
@@ -108,6 +109,41 @@ function get_meta(coin::Coin,colval_tup::Tuple{Union{String,Symbol},Any},column_
     o = subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
     return o
 end
+
+"""
+    find_parent(icode::String,meta::DataFrame) = meta[meta.iCode .== icode,:Parent][1]
+
+Find the parent indicator of an indicator specfied by `icode` in the
+composite indicator structure defined by `meta`.
+
+"""
+find_parent(icode::Union{String,String15},meta::DataFrame) = meta[meta.iCode .== icode,:Parent][1]
+
+"""
+    find_children(icode::String,meta::DataFrame) = meta[meta.Parent .== icode,:iCode]
+
+Find the child indicators of an indicator specfied by `icode` in the
+composite indicator structure defined by `meta`.
+
+"""
+find_children(icode::String,meta::DataFrame) = meta[meta.Parent .== icode,:iCode]
+
+find_children(icode::Vector{String},meta::DataFrame) = meta[in.(meta.Parent,icode),:iCode]
+
+function collect_lineages(coin::Coin;inputkey = :lineages)
+    m = coin.input[:indMeta]
+    v = []
+    for g in groupby(m[m.Level .==1,:],:Parent)
+        lineage = copy(g.iCode)
+        for l = 2:maximum(m.Level)
+            push!(lineage,find_parent(lineage[end],m))
+        end
+        push!(v,lineage)
+    end
+    coin.input[inputkey] = v
+end
+
+
 
 """
     levelnormalizedweights!(coin::Coin,weightkey::Symbol = :w_original)
