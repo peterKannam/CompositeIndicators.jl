@@ -18,6 +18,10 @@ function indicatorcorrelation!(coin::Coin;
 
     if write2coin
     ceji.results[resultkey] = o
+
+    write2log(coin,:results,resultkey,"indicatorcorrelation!"
+    ;argumentlist = [datakey,indicators,resultkey,String(Symbol(cor_function)),write2coin],
+    readout = "")
     end
     return o
 end
@@ -40,7 +44,15 @@ function indicatorpca!(coin::Coin;
 
     if write2coin
         ceji.results[resultkey] = m
+        write2log(coin,:results,resultkey ,"indicatorpca!"
+    ;argumentlist = [datakey,indicators,resultkey,maxoutdim,write2coin],
+    )
         end
     return m
+end
+
+function compareresultranks(coin::Coin,resultkeylist;
+    write2coin = false)
+
 end
 
