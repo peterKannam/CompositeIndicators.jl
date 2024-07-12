@@ -8,7 +8,7 @@ using DataFrames,CSV
 The dictionaries are used to contruct and analyse a composite indicator model.
 
 # Fields
--`input::Dict{Symbol,Any}`: 
+-`meta::Dict{Symbol,Any}`: 
 
 -`data::Dict{Symbol,Any}`:
 
@@ -21,7 +21,7 @@ The dictionaries are used to contruct and analyse a composite indicator model.
 -`log::DataFrame`:
 """
 mutable struct Coin
-    input::Dict{Symbol ,Any}
+    meta::Dict{Symbol ,Any}
     data::Dict{Symbol,Any}
     weights::Dict{Symbol,Any}
     log::DataFrame
@@ -30,21 +30,26 @@ mutable struct Coin
 end
 
 """
-    new_coin(indData,indMeta)
+    new_coin(indData,indStruct)
 
 Return a new `Coin` object to represent a composite indicator model. 
 
 Indicator data is defined by `indData`. Model structure and weighting scheme is defined by 
-`indMeta`.
+`indStruct`.
 """
-function new_coin(indData::DataFrame,indMeta::DataFrame)
+function new_coin(indData::DataFrame,indStruct::DataFrame)
+    
+    if not(validinputs(indData,indMeta))
+        error("The `DataFrames` for indicator data and indicator structure are not 
+        formatted correctly.")
+    end
     coin_out = Coin(
-        #input
-        Dict(:indMeta => indMeta,:indData => indData),
+        #meta
+        Dict(:indStruct => indStruct,:indData => indData),
         #data
-        Dict(:d_original=>indData[:,indMeta[indMeta.Type .== "Indicator",:iCode]]),
+        Dict(:d_original=>indData[:,indStruct[indStruct.Type .== "Indicator",:iCode]]),
         #weights
-        Dict(:w_original =>indMeta[indMeta.Type .== "Indicator" .|| indMeta.Type .== "Aggregate",
+        Dict(:w_original =>indStruct[indStruct.Type .== "Indicator" .|| indStruct.Type .== "Aggregate",
             ["iCode","Level","Weight","Parent"]]), 
         #log
         DataFrame(:location=>[],:fieldkeytup=>[],:type=>[],:function=>[],:arguments =>[],:readout=>[]), 
@@ -54,27 +59,51 @@ function new_coin(indData::DataFrame,indMeta::DataFrame)
         #figures
         Dict())
 
-        write2log(coin_out,:input,:indData,"new_coin", 
+        write2log(coin_out,:meta,:indData,"new_coin", 
         argumentlist = ["indData"])
 
-        write2log(coin_out,:input,:indMeta,"new_coin", 
-        argumentlist = ["indMeta"])
+        write2log(coin_out,:meta,:indStruct,"new_coin", 
+        argumentlist = ["indStruct"])
 
         write2log(coin_out,:data,:d_original,"new_coin", 
         argumentlist = ["indData"])
 
         write2log(coin_out,:weights,:w_original,"new_coin", 
-        argumentlist = ["indMeta"])
+        argumentlist = ["indStruct"])
     return coin_out
 end
 
 
-function check_indMeta(indMeta::DataFrame)
-    
-end
+function validateinputs(indData::DataFrame,indStruct::DataFrame)
 
-function check_indData(indData::DataFrame)
+    #input structure df has the correct columns
+    valid_structcols = names(indStruct) == [ "Level","iCode","iName","Direction",
+        "Weight","Parent","Type"]
 
+    #There is a single indicator on the highest level and it is named "Index"
+    valid_index = indStruct.iCode[indStruct.Level .== maximum(indStruct.Level)] == ["Index"]
+
+    #every indicator has a parent indicator listed in the structure with a level one higher
+    check_parentexists = trues(size(indStruct,1))
+    check_parentexists[end] = false
+    check_parentlevel = falses(size(indStruct,1))
+    check_parentlevel[end] = true
+    for i in 1:length(indStruct.iCode)-1
+        print(i,find_parent(indStruct.iCode[i],indStruct))
+        check_parentlevel[i] = indStruct[indStruct.iCode .== 
+            find_parent(indStruct.iCode[i],indStruct),:Level][1] == indStruct[i,:Level] + 1
+    end
+    valid_parent = in.(indStruct.Parent,[indStruct.iCode]) == check_parentexists && all(check_parentlevel)
+
+    #check that a unit column is followed by column names defined the the structure
+    check_indicators = trues(size(indData,2))
+    check_indicators[1] = false
+    valid_indicators = in.(names(indData),[indStruct.iCode])
+
+    #check that all elements of unit column are unique
+    valid_units = allunique(indData[:,1])
+
+    return all(valid_structcols,valid_index,valid_parent,valid_indicators,valid_units)
 end
 
 """
@@ -84,11 +113,11 @@ Return a `DataFrame` of a the metadata used to contruct the `Coin`.
 
 """
 function get_meta(coin::Coin)
-    return coin.input[:indMeta]
+    return coin.meta[:indStruct]
 end
 
 """
-    get_meta(coin,colval_tup;column_out = names(coin.input[:indMeta]))
+    get_meta(coin,colval_tup;column_out = names(coin.meta[:indStruct]))
 
 Return a `DataFrame` of a subset of the metadata. 
 
@@ -97,16 +126,16 @@ Subset specified by a tuple of column name and a value,
 be further defined using the `column_out` keyword. 
 """
 function get_meta(coin::Coin,colval_tup::Tuple{Union{String,Symbol},Any};
-    column_out = names(coin.input[:indMeta]))
+    column_out = names(coin.meta[:indStruct]))
     
-    o = subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
+    o = subset(coin.meta[:indStruct],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
     return o
 end
 
 #return specific meta data, no keyword
 function get_meta(coin::Coin,colval_tup::Tuple{Union{String,Symbol},Any},column_out)
     
-    o = subset(coin.input[:indMeta],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
+    o = subset(coin.meta[:indStruct],colval_tup[1]=> x->x .== colval_tup[2])[:,column_out]
     return o
 end
 
@@ -130,8 +159,8 @@ find_children(icode::String,meta::DataFrame) = meta[meta.Parent .== icode,:iCode
 
 find_children(icode::Vector{String},meta::DataFrame) = meta[in.(meta.Parent,icode),:iCode]
 
-function collect_lineages(coin::Coin;inputkey = :lineages)
-    m = coin.input[:indMeta]
+function collect_lineages(coin::Coin;metakey = :lineages)
+    m = coin.meta[:indStruct]
     v = []
     for g in groupby(m[m.Level .==1,:],:Parent)
         lineage = copy(g.iCode)
@@ -140,10 +169,8 @@ function collect_lineages(coin::Coin;inputkey = :lineages)
         end
         push!(v,lineage)
     end
-    coin.input[inputkey] = v
+    coin.meta[metakey] = v
 end
-
-
 
 """
     levelnormalizedweights!(coin::Coin,weightkey::Symbol = :w_original)
@@ -260,7 +287,7 @@ end
 
 function Base.display(coin::Coin)
     println("coin object with:")
-    println("        Inputs: ",collect(keys(coin.input)))
+    println("      MetaData: ",collect(keys(coin.meta)))
     println("      Datasets: ",sort(collect(keys(coin.data))))
     println("       Weights: ",collect(keys(coin.weights)))
     println("       Results: ",collect(keys(coin.results)))
