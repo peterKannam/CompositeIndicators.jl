@@ -30,7 +30,7 @@ mutable struct Coin
 end
 
 """
-    new_coin(indData,indStruct)
+    new_coin(indData::DataFrame,indStruct:DataFrame)
 
 Return a new `Coin` object to represent a composite indicator model. 
 
@@ -39,7 +39,7 @@ Indicator data is defined by `indData`. Model structure and weighting scheme is 
 """
 function new_coin(indData::DataFrame,indStruct::DataFrame)
     
-    if not(validinputs(indData,indMeta))
+    if !(validateinputs(indData,indStruct))
         error("The `DataFrames` for indicator data and indicator structure are not 
         formatted correctly.")
     end
@@ -89,7 +89,6 @@ function validateinputs(indData::DataFrame,indStruct::DataFrame)
     check_parentlevel = falses(size(indStruct,1))
     check_parentlevel[end] = true
     for i in 1:length(indStruct.iCode)-1
-        print(i,find_parent(indStruct.iCode[i],indStruct))
         check_parentlevel[i] = indStruct[indStruct.iCode .== 
             find_parent(indStruct.iCode[i],indStruct),:Level][1] == indStruct[i,:Level] + 1
     end
@@ -98,12 +97,12 @@ function validateinputs(indData::DataFrame,indStruct::DataFrame)
     #check that a unit column is followed by column names defined the the structure
     check_indicators = trues(size(indData,2))
     check_indicators[1] = false
-    valid_indicators = in.(names(indData),[indStruct.iCode])
+    valid_indicators = in.(names(indData),[indStruct.iCode]) == check_indicators
 
     #check that all elements of unit column are unique
     valid_units = allunique(indData[:,1])
 
-    return all(valid_structcols,valid_index,valid_parent,valid_indicators,valid_units)
+    return all([valid_structcols,valid_index,valid_parent,valid_indicators,valid_units])
 end
 
 """
