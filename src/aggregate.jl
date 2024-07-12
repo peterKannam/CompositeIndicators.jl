@@ -25,23 +25,23 @@ ag_prod(x::Vector,w::AbstractWeights) = prod(x)
 
 
 """
-    aggregate!(coin,datakey,weightskey;...)
+    aggregate!(coin::Coin,datakey::Symbol,weightskey::Symbol;...)
 
 Add the `DataFrame` results of composite indicator aggregation of `coin.data[datakey]` by 
-`coin.weights[weigtskey]` to `coin.data'[r_current]` and `coin.results["r_current"]`.
+`coin.weights[weigtskey]` to `coin.data'[:r_current]` and `coin.results[:r_current]`.
 
 # Arguments
--`resultkey::String = "current"`:  key that results are saved as in coin.data coin.results.
+- `resultkey::Symbol = :r_current`:  key that results are saved as in coin.data coin.results.
 
--`ag_function::Function = ag_mean`: function used to aggregate indicators of the same level. 
+- `ag_function::Function = ag_mean`: function used to aggregate indicators of the same level. 
 Functions must take agruments (x::Vector,w::AbstractWeights).
 
--`ag_function_override::Tuple{Int64,Function} = (0,ag_mean)`: tuple of level and aggregation.
+- `ag_function_override::Tuple{Int64,Function} = (0,ag_mean)`: tuple of level and aggregation.
 function that is different than ag_function. Works only for a single level.
 
--`indicators2exclude::Vector = []`: indicator columns to exclude in aggregation.
+- `indicators2exclude::Vector = []`: indicator columns to exclude in aggregation.
 
--`write2coin::Bool = true`:  if results are saved to coin.
+- `write2coin::Bool = true`:  if results are saved to coin.
 """
 function aggregate!(coin::Coin, datakey::Symbol, weightskey::Symbol;
     resultkey::Union{String,Symbol} = :r_current,
