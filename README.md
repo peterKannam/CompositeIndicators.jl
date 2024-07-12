@@ -1,6 +1,6 @@
 # CompositeIndicators.jl
 
- `CompositeIndicators.jl` is a package for the building and analysis of composite indicator models. It was developed as a learing excersise and is heavily influenced by the more complete[COINr](https://bluefoxr.github.io/COINr/) package by William Becker. A earlier version of this package was used to compute and assess the [Chicago Environmental Justice Index](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html).
+ `CompositeIndicators.jl` is a package for the building and analysis of composite indicator models. It was developed as a learing excersise and is heavily influenced by the more complete [COINr](https://bluefoxr.github.io/COINr/) package by William Becker. A earlier version of this package was used to compute and assess the [Chicago Environmental Justice Index](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html).
 
 
 ## Introduction
@@ -62,17 +62,30 @@ Indicator data is defined by `indData`. Model structure and weighting scheme is 
 
 
 ## `normalize! <: Function`
+```julia
+normalize!(coin;norm_function::Function,datakey::String,normalizedkey::String)
+```
 
-Dataflows are kept consistant by `Function`s designed to access and write to specific fields. Additionally, 
+Add a `DataFrame` of `coin.data[datakey]` normalized by `norm_function` to `coin.data[norm_*normalizedkey]`.
 
+  Normalize by applying `norm_function` to each column of the `DataFrame`. `norm_function` must take and return a `Vector`. If `datakey` is
+  unspecified, apply `norm_function` to `coin.data[:d_original]`. If `normalizedkey` is unspecified, add result with `key`
+  `norm_*String(Symbol(norm_function))`.
 
+## `aggregate! <: Function`
+```julia
+aggregate!(coin::Coin,datakey::Symbol,weightskey::Symbol;...)
+```
 
-### Building a Coin
+  Add the `DataFrame` results of composite indicator aggregation of `coin.data[datakey]` by `coin.weights[weigtskey]` to `coin.data'[:r_current]` 
+  and `coin.results[:r_current]`.
 
-### 
+### Arguments
 
-## Normalization
-
-## Aggregation
-
-## 
+- `resultkey::String = :r_current`: key that results are saved as in coin.data coin.results.
+- `ag_function::Function = ag_mean`: function used to aggregate indicators of the same level. Functions must take agruments
+  `(x::Vector,w::AbstractWeights)`.
+- `ag_function_override::Tuple{Int64,Function} = (0,ag_mean)`: tuple of level and aggregation. function that is different than
+  `ag_function`. Works only for a single level.
+- `indicators2exclude::Vector = []`: indicator columns to exclude in aggregation.
+- `write2coin::Bool = true`: if results are saved to coin.
