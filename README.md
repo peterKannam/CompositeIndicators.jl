@@ -23,18 +23,31 @@ The primary functions of `CompositeIndicators.jl` are correspond to major steps 
 The `Coin` (**Co**mposite **In**dicator) `DataType` is a composite type designed to record the structure of the of a composite indicator, all data that is included or produced during its calculation, and a log of all actions taken during its calculation. 
 
 It organizes all the information relevent to the composite indicator it represents is sorted into fields. All fields are of type `Dict{Symbol,Any}` and are further sorted by specificed prefixes to the `Symbol` keys. The fields, their default values, and key naming conventions are listed below. 
+
 ### `Coin` Fields
   - `Coin.meta::Dict{Symbol,Any}`: Composite indicator metadata.
     - `Coin.meta[:indData]::DataFrame`: indicator dataset used when creating `Coin`.
     - `Coin.meta[:indData]::DataFrame`: composite indicator structure.
 
   - `Coin.data::Dict{Symbol,Any}`: all datasets used by or produce by composite indicator models.
-    -  `Coin.data[:d_original]::DataFrame
+    -  `Coin.data[:d_original]::DataFrame`: indicator dataset used when creating `Coin`.
+    - `Key` conventions
+      - `:d_`: raw indicator dataset
+      - `:norm_`: normalized indicator dataset
+      - `:r_`: result dataset with normalized raw indicators and aggregate indicators
+      -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
+  
 
+  - `Coin.weights::Dict{Symbol,Any}`: weighting schemes used for aggregation
+    -  `Coin.weights[:w_original]::DataFrame`: weighting scheme descibed when creating `Coin`, `Coin.meta[:indStruct]`
+    - `Key` conventions
+      - `:w_`: weighting scheme 
 
-  - `weights::Dict{Symbol,Any}`:
-
-  - `results::Dict{Symbol,Any}`:
+  - `results::Dict{Symbol,Any}`: results of aggregating and analyzing composite indicators
+    - `Key` conventions
+      -  `:r_`: result dataset of aggregate indicators only
+      -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
+  
 
   - `figures::Dict{Symbol,Any}`:
 
