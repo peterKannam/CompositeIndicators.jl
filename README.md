@@ -36,7 +36,6 @@ It organizes all the information relevent to the composite indicator it represen
       - `:norm_`: normalized indicator dataset
       - `:r_`: result dataset with normalized raw indicators and aggregate indicators
       -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
-  
 
   - `Coin.weights::Dict{Symbol,Any}`: weighting schemes used for aggregation
     -  `Coin.weights[:w_original]::DataFrame`: weighting scheme descibed when creating `Coin`, `Coin.meta[:indStruct]`
@@ -48,14 +47,21 @@ It organizes all the information relevent to the composite indicator it represen
       -  `:r_`: result dataset of aggregate indicators only
       -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
   
+  - `figures::Dict{Symbol,Any}`: figures associated with the composite indicator
 
-  - `figures::Dict{Symbol,Any}`:
-
-  - `log::DataFrame`
+  - `log::DataFrame`: log of results produced by `CompositeIndicators.jl`.
 
 ## `new_coin <: Function`
 
-## `
+```julia 
+new_coin(indData::DataFrame,indStruct::DataFrame)
+```
+Return a new `Coin` object to represent a composite indicator model.
+
+Indicator data is defined by `indData`. Model structure and weighting scheme is defined by `indStruct`.
+
+
+## `normalize! <: Function`
 
 Dataflows are kept consistant by `Function`s designed to access and write to specific fields. Additionally, 
 
