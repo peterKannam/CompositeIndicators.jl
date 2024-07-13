@@ -16,13 +16,36 @@ The primary functions of `CompositeIndicators.jl` are correspond to major steps 
 - `normalize!`: normalize raw indicator datasets so they can be combined into a measure of a larger topic
 - `aggregate!`: aggregate the normalized indicators according to the structure
 
+## Basic Example: Chicago Environmental Justice Index 
 
+```julia
+include("src\\CompositeIndicators.jl")
+
+using .CompositeIndicators
+using CSV, DataFrames, StatsBase
+
+
+# CEJI is a composite indicator with 28 raw indicators and 4 Levels.
+ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv",missingstring = ["NA",""]))
+ceji_struct = DataFrame(CSV.File("examples\\CEJI_Struct.csv"))
+ceji = new_coin(ceji_data,ceji_meta)
+
+#CEJI replaces missing values with 0. 
+ceji.data[:d_zeros] = coalesce.(copy(ceji.data[:d_original]),0)
+
+#CEJI normalizes data using a percentile calculation where ties values are assigned identical results.
+normalize!(ceji,norm_function = norm_competepercentile,datakey = :d_zeros)
+
+#CEJI aggregates indicators by arithmetic mean for Levels 1 and 2, but by product for Level 3
+aggregate!(ceji,:norm_competepercentile,:w_original,resultkey = "r_v11",
+    ag_function = ag_mean, ag_function_override = (3,ag_prod))
+```
 
 ## `Coin <: DataType`
 
 The `Coin` (**Co**mposite **In**dicator) `DataType` is a composite type designed to record the structure of the of a composite indicator, all data that is included or produced during its calculation, and a log of all actions taken during its calculation. 
 
-It organizes all the information relevent to the composite indicator it represents is sorted into fields. All fields are of type `Dict{Symbol,Any}` and are further sorted by specificed prefixes to the `Symbol` keys. The fields, their default values, and key naming conventions are listed below. 
+A `Coin` organizes all the information relevent to the composite indicator it represents is sorted into fields. All fields are of type `Dict{Symbol,Any}` and are further sorted by specificed prefixes to the `Symbol` keys. The fields, their default values, and key naming conventions are listed below. 
 
 ### `Coin` Fields
   - `Coin.meta::Dict{Symbol,Any}`: Composite indicator metadata.
