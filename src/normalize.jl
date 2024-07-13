@@ -100,8 +100,10 @@ function normalize!(coin::Coin;norm_function::Function,
 
     if normalizedkey == :none
         normkey = Symbol(norm_function)
-    else
-        normkey = Symbol("norm_",normalizedkey)
+    end
+
+    if String(resultkey)[1:5] !== "norm_"
+        error("RESULTKEY ERROR: `resultkey` arguement must start with `r_`. $resultkey")
     end
 
     if in(normkey,collect(keys(coin.data)))
