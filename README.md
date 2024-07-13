@@ -24,7 +24,6 @@ include("src\\CompositeIndicators.jl")
 using .CompositeIndicators
 using CSV, DataFrames, StatsBase
 
-
 # CEJI is a composite indicator with 28 raw indicators and 4 Levels.
 ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv",missingstring = ["NA",""]))
 ceji_struct = DataFrame(CSV.File("examples\\CEJI_Struct.csv"))
@@ -37,8 +36,11 @@ ceji.data[:d_zeros] = coalesce.(copy(ceji.data[:d_original]),0)
 normalize!(ceji,norm_function = norm_competepercentile,datakey = :d_zeros)
 
 #CEJI aggregates indicators by arithmetic mean for Levels 1 and 2, but by product for Level 3
-aggregate!(ceji,:norm_competepercentile,:w_original,resultkey = "r_v11",
+aggregate!(ceji,:norm_competepercentile,:w_original,resultkey = :r_v1,
     ag_function = ag_mean, ag_function_override = (3,ag_prod))
+
+#save result
+write("examples\\CEJI_result.csv",ceji.results[:r_v1])
 ```
 
 ## `Coin <: DataType`
@@ -57,8 +59,6 @@ A `Coin` organizes all the information relevent to the composite indicator it re
     - `Key` conventions
       - `:d_`: raw indicator dataset
       - `:norm_`: normalized indicator dataset
-      - `:r_`: result dataset with normalized raw indicators and aggregate indicators
-      -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
 
   - `Coin.weights::Dict{Symbol,Any}`: weighting schemes used for aggregation
     -  `Coin.weights[:w_original]::DataFrame`: weighting scheme descibed when creating `Coin`, `Coin.meta[:indStruct]`
@@ -67,7 +67,7 @@ A `Coin` organizes all the information relevent to the composite indicator it re
 
   - `results::Dict{Symbol,Any}`: results of aggregating and analyzing composite indicators
     - `Key` conventions
-      -  `:r_`: result dataset of aggregate indicators only
+      -  `:r_`: result dataset of normalized raw indicators and aggregate indicators
       -  `:r_ex_`: result dataset aggregated excluding certain raw indicators
   
   - `figures::Dict{Symbol,Any}`: figures associated with the composite indicator
