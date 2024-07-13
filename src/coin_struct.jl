@@ -293,4 +293,3 @@ function Base.display(coin::Coin)
     println("       Figures: ",collect(keys(coin.figures)))
 
 end
-
