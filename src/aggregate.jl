@@ -21,7 +21,7 @@ ag_mean(x::Vector,w::AbstractWeights) = mean(x,w)
     Product of `x` using ignoring weights `w` by `prod(x)`.
 
 """
-ag_prod(x::Vector,w::AbstractWeights) = prod(x)
+ag_product(x::Vector,w::AbstractWeights) = prod(x)
 
 
 """
