@@ -1,11 +1,11 @@
 # CompositeIndicators.jl
 
- `CompositeIndicators.jl` is a package for the building and analysis of composite indicator models. It was developed as a learing excersise and is heavily influenced by the more complete [COINr](https://bluefoxr.github.io/COINr/) package by William Becker. A earlier version of this package was used to compute and assess the [Chicago Environmental Justice Index](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html).
+ `CompositeIndicators.jl` is a package for the building and analysis of composite indicator models. It was developed as a learning excersise and is heavily influenced by the more complete [COINr](https://bluefoxr.github.io/COINr/) package by William Becker. A earlier version of this package was used to compute and assess the [Chicago Environmental Justice Index](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html).
 
 
 ## Introduction
 
-`CompositeIndicators.jl` allows for the calculation and analysis of robust, replicable, and reportable composite indicators by defining a set workflow through the `Coin <: DataType` and a set of `Function`s that operate on it. This workflow mandates quality control in the following ways:
+`CompositeIndicators.jl` allows for the calculation and analysis of robust, replicable, and reportable composite indicators by defining a set workflow through the `Coin <: DataType` and a set of `Functions` that operate on it. This workflow mandates quality control in the following ways:
 
 - `Functions` produce standardized results for comparison, visualization, and further processing. 
 - `Functions` are not allowed to overwrite previous results in a `Coin`.
@@ -29,9 +29,6 @@ ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv",missingstring = ["NA
 ceji_struct = DataFrame(CSV.File("examples\\CEJI_Struct.csv"))
 ceji = new_coin(ceji_data,ceji_meta)
 
-#CEJI replaces missing values with 0. 
-ceji.data[:d_zeros] = coalesce.(copy(ceji.data[:d_original]),0)
-
 #CEJI normalizes data using a percentile calculation where ties values are assigned identical results.
 normalize!(ceji,norm_function = norm_competepercentile,datakey = :d_zeros)
 
@@ -39,8 +36,9 @@ normalize!(ceji,norm_function = norm_competepercentile,datakey = :d_zeros)
 aggregate!(ceji,:norm_competepercentile,:w_original,resultkey = :r_v1,
     ag_function = ag_mean, ag_function_override = (3,ag_prod))
 
-#save result
+#save CEJI result and process log
 write("examples\\CEJI_result.csv",ceji.results[:r_v1])
+write("examples\\CEJI_log.csv",ceji.log)
 ```
 
 ## `Coin <: DataType`
