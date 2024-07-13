@@ -98,22 +98,14 @@ function aggregate!(coin::Coin, datakey::Symbol, weightskey::Symbol;
         end
     end
     
-    #add result dataset to .data and .results dicts
+    #add result dataset to .results dicts
     if write2coin 
-        coin.data[Symbol(resultkey)] = d
-        coin.results[Symbol(resultkey)] = d[:,get_meta(coin,(:Type, "Aggregate"),:iCode)]
+
+        coin.results[Symbol(resultkey)] = d
         
         #log_readout = "Result dataset `r_$resultkey` was created by aggregating `$datakey`
         #    accoring to weighting scheme `$weightskey` with aggregation function `"
             # *String(Symbol(ag_function))
-
-        write2log(coin,:data,Symbol(resultkey),"aggregate!", 
-        argumentlist = [datakey, weightskey,
-        resultkey,ag_function, 
-        ag_function_override,
-        indicators2exclude,
-        write2coin]
-        )
 
         write2log(coin,:results,Symbol(resultkey),"aggregate!", 
         argumentlist = [datakey, weightskey,
