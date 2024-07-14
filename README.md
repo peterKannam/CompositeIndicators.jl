@@ -17,7 +17,7 @@ The primary functions of `CompositeIndicators.jl` are correspond to major steps 
 - `aggregate!`: aggregate the normalized indicators according to the structure
 
 ## Basic Example: Chicago Environmental Justice Index 
-
+Methods description and dataset can be found [here](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html). An example demostrating more of the functionality of `CompositeIndicators.jl` can be found [later on this page]() and in [interactive notebook form]().   
 ```julia
 include("src\\CompositeIndicators.jl")
 
@@ -25,9 +25,9 @@ using .CompositeIndicators
 using CSV, DataFrames, StatsBase
 
 # CEJI is a composite indicator with 28 raw indicators and 4 Levels.
-ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv",missingstring = ["NA",""]))
+ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv"))
 ceji_struct = DataFrame(CSV.File("examples\\CEJI_Struct.csv"))
-ceji = new_coin(ceji_data,ceji_meta)
+ceji = new_coin(ceji_data,ceji_struct)
 
 #CEJI normalizes data using a percentile calculation where ties values are assigned identical results.
 normalize!(ceji,norm_function = norm_competepercentile,datakey = :d_zeros)
@@ -91,7 +91,7 @@ Add a `DataFrame` of `coin.data[datakey]` normalized by `norm_function` to `coin
 
   Normalize by applying `norm_function` to each column of the `DataFrame`. `norm_function` must take and return a `Vector`. If `datakey` is
   unspecified, apply `norm_function` to `coin.data[:d_original]`. If `normalizedkey` is unspecified, add result with `key`
-  `norm_*String(Symbol(norm_function))`.
+  `String(Symbol(norm_function))`.
 
 ## `aggregate! <: Function`
 ```julia
