@@ -27,10 +27,10 @@
 1,PTRAF,Traffic Proximity and Volume,1,1,EnvExp,Indicator
 1,RSEI_AIR,Toxic Releases to Air,1,1,EnvExp,Indicator
 1,EBLL,Lead Poisoning,1,1,EnvExp,Indicator
-2,SenPop,Sensitive Populations,1,1,PopChar,Aggregate
-2,SEFac,Socioeconomic Factors,1,1,PopChar,Aggregate
+2,SenPop,Sensitive Populations,1,2,PopChar,Aggregate
+2,SEFac,Socioeconomic Factors,1,2,PopChar,Aggregate
 2,EnvCond,Environmental Conditions,1,1,PolBur,Aggregate
-2,EnvExp,Environmental Exposure,1,1,PolBur,Aggregate
+2,EnvExp,Environmental Exposure,1,2,PolBur,Aggregate
 3,PopChar,Population Characteristics,1,1,Index,Aggregate
 3,PolBur,Pollution Burden,1,1,Index,Aggregate
 4,Index,CIA,1,1,NA,Aggregate
