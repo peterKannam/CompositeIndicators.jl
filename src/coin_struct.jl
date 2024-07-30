@@ -154,11 +154,11 @@ Find the child indicators of an indicator specfied by `icode` in the
 composite indicator structure defined by `meta`.
 
 """
-find_children(icode::String,meta::DataFrame) = meta[meta.Parent .== icode,:iCode]
+find_children(icode::AbstractString,meta::DataFrame) = meta[meta.Parent .== icode,:iCode]
 
 find_children(icode::Vector{String},meta::DataFrame) = meta[in.(meta.Parent,icode),:iCode]
 
-function collect_lineages(coin::Coin;metakey = :lineages)
+function collect_lineages!(coin::Coin;metakey = :lineages)
     m = coin.meta[:indStruct]
     v = []
     for g in groupby(m[m.Level .==1,:],:Parent)
