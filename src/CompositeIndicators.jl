@@ -7,7 +7,7 @@ export Coin,
     levelnormalizeweights!,
     find_parent,
     find_children,
-    collect_lineages
+    collect_lineages!
 
 include("normalize.jl")
 export normalize!,
@@ -20,10 +20,13 @@ export aggregate!,
     reaggregate_excludeindicator!,
     ag_geomean,
     ag_mean,
-    ag_prod
+    ag_product
 
 include("coherence.jl")
 export indicatorcorrelation!,
     indicatorpca!
+
+include("sensitivity.jl")
+export compareresults!
 
 end
