@@ -12,12 +12,12 @@ function indicatorcorrelation!(coin::Coin;
         datakey=:d_original,indicators= names(coin.data[datakey]),
         resultkey=:cor_current, cor_function = cor,write2coin = false)
 
-    o = cor_function(Matrix(coin.data[datakey][:,indicators]))
+    o = cor_function(Matrix(coin.results[datakey][:,indicators]))
     o = DataFrame(o, :auto)
     rename!(o,indicators)
 
     if write2coin
-    ceji.results[resultkey] = o
+    coin.results[resultkey] = o
 
     write2log(coin,:results,resultkey,"indicatorcorrelation!"
     ;argumentlist = [datakey,indicators,resultkey,String(Symbol(cor_function)),write2coin],
@@ -38,21 +38,16 @@ function indicatorpca!(coin::Coin;
         datakey=:d_original,indicators= names(coin.data[datakey]),
         resultkey=:pca_model, maxoutdim = 2,write2coin = false)
 
-    d = coin.data[datakey][:,indicators]
+    d = coin.results[datakey][:,indicators]
     #generate PCA model. Matrix transpose occurs to reduce indicator dimensions instead of unit dimensions
     m = fit(PCA,Matrix(d)',maxoutdim = maxoutdim)
 
     if write2coin
-        ceji.results[resultkey] = m
+        coin.results[resultkey] = m
         write2log(coin,:results,resultkey ,"indicatorpca!"
     ;argumentlist = [datakey,indicators,resultkey,maxoutdim,write2coin],
     )
         end
     return m
-end
-
-function compareresultranks(coin::Coin,resultkeylist;
-    write2coin = false)
-
 end
 
