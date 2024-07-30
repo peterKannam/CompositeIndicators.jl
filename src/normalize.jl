@@ -102,13 +102,13 @@ function normalize!(coin::Coin;norm_function::Function,
         normkey = Symbol(norm_function)
     end
 
-    if String(resultkey)[1:5] !== "norm_"
-        error("RESULTKEY ERROR: `resultkey` arguement must start with `r_`. $resultkey")
+    if String(normkey)[1:5] !== "norm_"
+        error("Key Error: `normalizedkey` argument must start with `norm_`. $normkey")
     end
 
     if in(normkey,collect(keys(coin.data)))
         error("OVERWRITING ERROR: dataset titled `$normkey` is already present in the coin. 
-        Choose a different name by specifiying the `resultkey` arugment.")
+        Choose a different name by specifiying the `normalizedkey` arugment.")
     end
 
     if write2coin
