@@ -1,7 +1,7 @@
-include("..\\src\\CompositeIndicators.jl")
+# include("..\\src\\CompositeIndicators.jl")
 
-using .CompositeIndicators
-using CSV, DataFrames, StatsBase, CairoMakie
+# using .CompositeIndicators
+# using CSV, DataFrames, StatsBase, CairoMakie, LinearAlgebra, MultivariateStats
 
 #CEJI is a composite indicator with 28 raw indicators and 4 Levels.
 ceji_data = DataFrame(CSV.File("examples\\CEJI_indData.csv"))
@@ -37,19 +37,49 @@ for i = 1:length(get_meta(ceji,(:Level,2),:iCode))
         datakey=:r_v1,indicators= ceji.meta[:lineages][i],
         resultkey=Symbol(:cor_lin,lvl2_ind), cor_function = cor,write2coin = true)
     #Heatmap of indicator correlations
+    indNum = length(ceji.meta[:lineages][i])
+    cortxt = [string(round(lin_cor[x,y],digits = 3)) for x in collect(1:indNum) for y in collect(1:indNum)]
+    xtxt = repeat(1:indNum, indNum)
+    ytxt = repeat(1:indNum, inner = indNum)
+
     f_heatmap = Figure()
     ax_heatmap = Axis(f_heatmap[1,1], title = "Correlation between $lvl2_ind Indicators",
         xticks = (1:size(lin_cor,1),names(lin_cor)),
         xticklabelrotation = 45,
         yticks = (1:size(lin_cor,1),names(lin_cor)))
     heatmap!(Matrix(lin_cor))
+    text!(ax_heatmap,xtxt,ytxt,text = cortxt,align = (:center,:center),fontsize = 12,color=:black)
     Colorbar(f_heatmap[1, 2], limits = (-1, 1))
     display(f_heatmap)
+    ceji.figures[Symbol(:hm_,lvl2_ind,"_lineage")] = f_heatmap
 
     #Biplot of indicator PCA analayis
     lin_pca = indicatorpca!(ceji;
     datakey=:r_v1,indicators= find_children(lvl2_ind,get_meta(ceji)),
     resultkey=Symbol("pca_",lvl2_ind), maxoutdim = 2,write2coin = true)
+
+    var_explained = eigvals(lin_pca) ./ var(lin_pca)
+    ldgs = loadings(lin_pca)
+
+    f_loadings = Figure(size = (400,400))
+    ax = Axis(f_loadings[1,1],limits = (-0.5,0.5,-0.5,0.5),
+            title = "PCA of $lvl2_ind Indicators",
+            xlabel = "PC 1: "*string(round(var_explained[1]*100,digits = 1 ))*"%",
+            ylabel = "PC 2: "*string(round(var_explained[2]*100,digits = 1 ))*"%",
+            autolimitaspect = 1,)
+
+    for i = 1:size(ldgs)[1]
+        if ldgs[i,1] > 0
+            text!(ldgs[i,1]+0.05,ldgs[i,2],text = names(lin_cor)[i],align = (:left,:center))
+        else 
+            text!(ldgs[i,1]-0.05,ldgs[i,2],text = names(lin_cor)[i],align = (:right,:center))
+        end
+        lines!([0,ldgs[i,1]],[0,ldgs[i,2]],color = :black)
+    end
+    ceji.figures[Symbol(:pca_,lvl2_ind,"_lineage")] = f_loadings
+
+    display(f_loadings)
+
 end
 
 #Compare the unit rankings of different results to :r_v1
@@ -70,6 +100,19 @@ for i in 1:length(keys_comparisons)
 end
 ceji.figures[:f_excludeindicators] = f_excludeindicators
 
-# save CEJI result and process log
-# write("examples\\CEJI_result.csv",ceji.results[:r_v1])
-# write("examples\\CEJI_log.csv",ceji.log)
+#save figures
+for fig in keys(ceji.figures)
+    save("examples\\CEJI_Example_Output\\ceji_"*String(fig)*".png",ceji.figures[fig])
+end
+
+#save results
+for df in keys(ceji.results)
+    if String(df)[1:2] == "r_"
+        CSV.write("examples\\CEJI_Example_Output\\ceji_"*String(df)*".csv",ceji.results[df])
+    end
+end
+
+#save log
+CSV.write("examples\\CEJI_Example_Output\\ceji_log.csv",ceji.log)
+
+
