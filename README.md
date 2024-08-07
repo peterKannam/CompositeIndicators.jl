@@ -17,7 +17,7 @@ The primary functions of `CompositeIndicators.jl` are correspond to major steps 
 - `aggregate!`: aggregate the normalized indicators according to the structure
 
 ## Basic Example: Chicago Environmental Justice Index 
-Methods description and dataset can be found [here](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html). An example demostrating more of the functionality of `CompositeIndicators.jl` can be found [later on this page]() and in [interactive notebook form]().   
+Methods description and dataset can be found [here](https://www.chicago.gov/city/en/depts/cdph/supp_info/Environment/cumulative-impact-assessment.html). An example demostrating more of the functionality of `CompositeIndicators.jl` can be found in `examples\CEJI_Example.jl`. The outputs for this example can be found in `examples\CEJI_Example_Output`.   
 ```julia
 include("src\\CompositeIndicators.jl")
 
