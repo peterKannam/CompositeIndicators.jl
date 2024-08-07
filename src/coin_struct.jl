@@ -269,6 +269,11 @@ function levelnormalizeweights!(weight_df::DataFrame)
     return w
 end
 
+function icode2iname(icode::AbstractString,istruct::DataFrame)
+    o = istruct.iName[indexin([icode],istruct.iCode)][1]
+    return o
+end
+
 function write2log(coin::Coin,field::Symbol,key::Symbol,createdby::String
     ;argumentlist = [],
     readout = "")
